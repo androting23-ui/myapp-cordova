@@ -36,10 +36,13 @@ jobs:
 
       - name: Prepare
         run: cordova prepare android
+        working-directory: myapp
 
       - name: Add Android platform
         run: cordova platform add android
+        working-directory: myapp
 
 
       - name: Build APK (debug)
         run: cordova build android
+        working-directory: myapp
