@@ -32,17 +32,10 @@ jobs:
       - name: Clean Android platform
         run: |
           cordova platform remove android || true
-          cordova platform add android
+          cordova platform add android@13
 
       - name: Prepare
         run: cordova prepare android
-        working-directory: cordova
-
-      - name: Add Android platform
-        run: cordova platform add android
-        working-directory: cordova
-
 
       - name: Build APK (debug)
         run: cordova build android
-        working-directory: cordova
