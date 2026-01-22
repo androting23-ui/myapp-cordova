@@ -37,5 +37,9 @@ jobs:
       - name: Prepare
         run: cordova prepare android
 
+      - name: Add Android platform
+        run: cordova platform add android
+
+
       - name: Build APK (debug)
         run: cordova build android
