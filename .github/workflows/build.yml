@@ -2,27 +2,26 @@ name: Build Android APK
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
-
-      - name: Install Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
 
       - name: Install Cordova
         run: npm install -g cordova
@@ -30,14 +29,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Add Android platform
-        run: cordova platform add android
+      - name: Clean Android platform
+        run: |
+          cordova platform remove android || true
+          cordova platform add android
+
+      - name: Prepare
+        run: cordova prepare android
 
       - name: Build APK (debug)
-        run: cordova build android --debug --verbose
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
+        run: cordova build android

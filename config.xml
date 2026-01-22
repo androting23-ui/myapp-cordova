@@ -21,9 +21,9 @@
     <preference name="StatusBarBackgroundColor" value="#000000" />
 
     <!-- DISABLE SPLASH COMPLETELY -->
-    <preference name="SplashScreen" value="none" />
-    <preference name="SplashScreenDelay" value="0" />
-    <preference name="FadeSplashScreen" value="false" />
+    <platform name="android">
+  <icon src="resources/icon.png" />
+</platform>
 
     <platform name="android">
         <preference name="android-minSdkVersion" value="22" />

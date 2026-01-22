@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kpr Calculator</title>
+
+<!-- APP ICON & THEME SETTINGS -->
+<meta name="theme-color" content="#0F0F0F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="application-name" content="Kpr Calc">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0F0F0F;
+  --surface: #1A1A1A;
+  --surface-active: #252525;
+  --primary: #FF9F1C; /* Industrial Orange */
+  --text-main: #FFFFFF;
+  --text-secondary: #A1A1A1;
+  --border: #333333;
+  --success: #4ADE80;
+  --error: #EF4444;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--text-main);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  /* Prevent pull-to-refresh on mobile for app feel */
+  overscroll-behavior-y: none; 
+}
+
+.container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header */
+.header {
+  margin-bottom: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 0;
+  text-transform: uppercase;
+  color: var(--text-main);
+}
+
+.header p {
+  font-size: 12px;
+  color: var(--primary);
+  margin-top: 4px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Input Styles */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.input-group { display: flex; flex-direction: column; gap: 8px; }
+
+label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 14px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-main);
+  font-size: 16px; /* Prevents iOS zoom */
+  font-family: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+input::placeholder { color: #444; }
+input:focus { outline: none; background: var(--surface-active); border-color: var(--primary); }
+
+/* Toggle */
+.segmented-control {
+  background: var(--surface);
+  padding: 4px;
+  border-radius: var(--radius);
+  display: flex;
+  gap: 4px;
+  border: 1px solid var(--border);
+}
+
+.segment-label {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.segment-label:has(input:checked) {
+  background: var(--surface-active);
+  color: var(--primary);
+}
+.segmented-control input { display: none; }
+
+/* Button */
+button.calc-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: #000;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+button.calc-btn:active { opacity: 0.9; transform: scale(0.98); }
+
+/* Results */
+.result-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: none;
+}
+.result-panel.visible { display: block; animation: fadeUp 0.3s ease; }
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #2a2a2a;
+}
+.result-row:last-child { border-bottom: none; }
+.res-label { font-size: 11px; color: var(--text-secondary); }
+.res-value { font-size: 14px; color: var(--text-main); font-weight: 600; }
+.res-highlight { color: var(--primary); font-size: 16px; }
+
+.status-badge {
+  padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase;
+}
+.status-success { background: rgba(74, 222, 128, 0.1); color: var(--success); }
+.status-warn { background: rgba(250, 204, 21, 0.1); color: #FACC15; }
+
+.hidden { display: none; }
+.footer { margin-top: auto; text-align: center; font-size: 10px; color: #444; font-weight: 500; padding-bottom: 10px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>KPR CALCULATOR</h1>
+    <p>By Tajmul</p>
+  </div>
+
+  <div class="input-group">
+    <label>Total Span (Inside Dimension)</label>
+    <input id="frame" type="text" placeholder='e.g. 44"' inputmode="text">
+  </div>
+
+  <div class="input-group">
+    <label>Material O.D. / Width</label>
+    <input id="bar" type="text" placeholder='e.g. 4 null' inputmode="text">
+  </div>
+
+  <div class="input-group" style="margin-top:8px;">
+    <label>Calculation Method</label>
+    <div class="segmented-control">
+      <label class="segment-label">
+        <input type="radio" name="mode" value="gap" checked onchange="toggleInputs()">
+        Optimize Gap
+      </label>
+      <label class="segment-label">
+        <input type="radio" name="mode" value="pipe" onchange="toggleInputs()">
+        Fixed Quantity
+      </label>
+    </div>
+  </div>
+
+  <div id="gapInputs" class="grid-2">
+    <div class="input-group">
+      <label>Min Gap</label>
+      <input id="gapStart" placeholder='e.g. 3"' inputmode="text">
+    </div>
+    <div class="input-group">
+      <label>Max Gap</label>
+      <input id="gapMax" placeholder='e.g. 4"' inputmode="text">
+    </div>
+  </div>
+
+  <div id="pipeInputs" class="input-group hidden">
+    <label>Quantity Required</label>
+    <input id="pipeCount" type="number" placeholder="10" inputmode="numeric">
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">Calculate</button>
+
+  <div id="outputPanel" class="result-panel">
+    <div id="outputContent"></div>
+  </div>
+
+  <div class="footer">
+    © Kpr Calculator By Tajmul
+  </div>
+</div>
+
+<script>
+const NULL=1/8, HALF_NULL=NULL/2;
+
+function parseInch(t){
+ t=t.toLowerCase();let v=0;
+ let i=t.match(/(\d+(\.\d+)?)\s*inch/);
+ let n=t.match(/(\d+(\.\d+)?)\s*null/);
+ if(i)v+=parseFloat(i[1]);
+ if(n)v+=parseFloat(n[1])*NULL;
+ if(!i&&!n)v=parseFloat(t); 
+ return v;
+}
+
+function toInchNull(x){
+ let h=Math.round(x/HALF_NULL);
+ let inch=Math.floor(h/16);
+ let r=h%16,n=Math.floor(r/2),half=r%2;
+ if(inch&&n&&half) return `${inch}" ${n}.5 null`;
+ if(inch&&n)       return `${inch}" ${n} null`;
+ if(inch&&half)    return `${inch}" 0.5 null`;
+ if(inch)          return `${inch}"`;
+ if(n&&half)       return `${n}.5 null`;
+ if(n)             return `${n} null`;
+ return `0.5 null`;
+}
+
+function gapPriority(f,b,gs,gm){
+ let best=null,d=1e9;
+ for(let g=gs;g<=gm+0.0001;g+=HALF_NULL){
+  let n=Math.floor((f-g)/(b+g));
+  if(n>0){
+   let u=n*b+(n+1)*g;
+   let diff=Math.abs(f-u);
+   if(diff<d){d=diff;best={n,g,diff};}
+   if(diff<0.001) return{...best,exact:true};
+  }
+ }
+ if(best) return{...best,exact:false};
+ return null;
+}
+
+function pipePriority(f,b,n){
+ let g=(f-n*b)/(n+1);
+ return g<0 ? null : g;
+}
+
+function toggleInputs() {
+  const mode = document.querySelector("input[name=mode]:checked").value;
+  const gapGroup = document.getElementById("gapInputs");
+  const pipeGroup = document.getElementById("pipeInputs");
+  if(mode === "gap") {
+    gapGroup.classList.remove("hidden");
+    pipeGroup.classList.add("hidden");
+  } else {
+    gapGroup.classList.add("hidden");
+    pipeGroup.classList.remove("hidden");
+  }
+  document.getElementById("outputPanel").classList.remove("visible");
+}
+
+function calculate(){
+ const panel = document.getElementById("outputPanel");
+ const content = document.getElementById("outputContent");
+ try {
+  let f_val = frame.value.replace(/"/g, ' inch');
+  let b_val = bar.value.replace(/"/g, ' inch');
+  let f = parseInch(f_val);
+  let b = parseInch(b_val);
+  let m = document.querySelector("input[name=mode]:checked").value;
+  if(isNaN(f) || isNaN(b) || f===0) throw "Invalid";
+
+  let html = "";
+  if(m === "gap"){
+   let gs = parseInch(gapStart.value.replace(/"/g, ' inch'));
+   let gm = parseInch(gapMax.value.replace(/"/g, ' inch'));
+   if(isNaN(gs) || isNaN(gm)) throw "Invalid";
+   let r = gapPriority(f,b,gs,gm);
+   if(r) {
+     html = `<div class="result-row"><span class="res-label">Material Qty</span><span class="res-value">${r.n} Units</span></div>
+             <div class="result-row"><span class="res-label">Spacing (Gap)</span><span class="res-value res-highlight">${toInchNull(r.g)}</span></div>
+             <div class="result-row"><span class="res-label">Fit Status</span><span class="status-badge ${r.exact ? 'status-success' : 'status-warn'}">${r.exact ? 'Perfect Fit' : 'Nearest Approx'}</span></div>`;
+   } else { html = `<div style="text-align:center; color:var(--error);">No practical gap found.</div>`; }
+  } else {
+   let pc = parseInt(pipeCount.value);
+   if(isNaN(pc) || pc <= 0) throw "Invalid";
+   let g = pipePriority(f,b,pc);
+   if(g) {
+     html = `<div class="result-row"><span class="res-label">Required Spacing</span><span class="res-value res-highlight">${toInchNull(g)}</span></div>`;
+   } else { html = `<div style="text-align:center; color:var(--error);">Exceeds total span.</div>`; }
+  }
+  content.innerHTML = html;
+  panel.classList.add("visible");
+ } catch(e) {
+  content.innerHTML = `<div style="text-align:center; color:var(--error);">⚠ Check inputs</div>`;
+  panel.classList.add("visible");
+ }
+}
+toggleInputs();
+</script>
+</body>
+</html>
+
