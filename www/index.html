@@ -12,6 +12,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="application-name" content="Kpr Calc">
 
+<!-- This makes it look like a Native App -->
+<link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Kpr%20Calculator%22%2C%22short_name%22%3A%22Kpr%20Calc%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230F0F0F%22%2C%22theme_color%22%3A%22%230F0F0F%22%7D">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -21,7 +24,7 @@
   --bg: #0F0F0F;
   --surface: #1A1A1A;
   --surface-active: #252525;
-  --primary: #FF9F1C; /* Industrial Orange */
+  --primary: #FF9F1C; 
   --text-main: #FFFFFF;
   --text-secondary: #A1A1A1;
   --border: #333333;
@@ -35,14 +38,13 @@
 body {
   margin: 0;
   background: var(--bg);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', sans-serif;
   color: var(--text-main);
   display: flex;
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
-  /* Prevent pull-to-refresh on mobile for app feel */
-  overscroll-behavior-y: none; 
+  overscroll-behavior-y: none;
 }
 
 .container {
@@ -53,7 +55,6 @@ body {
   gap: 24px;
 }
 
-/* Header */
 .header {
   margin-bottom: 12px;
   padding-bottom: 16px;
@@ -78,7 +79,6 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Input Styles */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .input-group { display: flex; flex-direction: column; gap: 8px; }
 
@@ -97,15 +97,12 @@ input {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   color: var(--text-main);
-  font-size: 16px; /* Prevents iOS zoom */
-  font-family: inherit;
+  font-size: 16px;
   transition: border-color 0.2s, background 0.2s;
 }
 
-input::placeholder { color: #444; }
 input:focus { outline: none; background: var(--surface-active); border-color: var(--primary); }
 
-/* Toggle */
 .segmented-control {
   background: var(--surface);
   padding: 4px;
@@ -123,7 +120,6 @@ input:focus { outline: none; background: var(--surface-active); border-color: va
   font-size: 12px;
   color: var(--text-secondary);
   border-radius: 6px;
-  transition: all 0.2s;
   font-weight: 500;
 }
 
@@ -133,7 +129,6 @@ input:focus { outline: none; background: var(--surface-active); border-color: va
 }
 .segmented-control input { display: none; }
 
-/* Button */
 button.calc-btn {
   width: 100%;
   padding: 16px;
@@ -144,13 +139,11 @@ button.calc-btn {
   color: #000;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
   cursor: pointer;
   margin-top: 12px;
 }
-button.calc-btn:active { opacity: 0.9; transform: scale(0.98); }
+button.calc-btn:active { opacity: 0.9; }
 
-/* Results */
 .result-panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -161,32 +154,24 @@ button.calc-btn:active { opacity: 0.9; transform: scale(0.98); }
 .result-panel.visible { display: block; animation: fadeUp 0.3s ease; }
 
 .result-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #2a2a2a;
+  display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #2a2a2a;
 }
 .result-row:last-child { border-bottom: none; }
 .res-label { font-size: 11px; color: var(--text-secondary); }
 .res-value { font-size: 14px; color: var(--text-main); font-weight: 600; }
 .res-highlight { color: var(--primary); font-size: 16px; }
 
-.status-badge {
-  padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase;
-}
+.status-badge { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
 .status-success { background: rgba(74, 222, 128, 0.1); color: var(--success); }
 .status-warn { background: rgba(250, 204, 21, 0.1); color: #FACC15; }
 
 .hidden { display: none; }
 .footer { margin-top: auto; text-align: center; font-size: 10px; color: #444; font-weight: 500; padding-bottom: 10px; }
-
 @keyframes fadeUp { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 
 <body>
-
 <div class="container">
   <div class="header">
     <h1>KPR CALCULATOR</h1>
@@ -239,9 +224,7 @@ button.calc-btn:active { opacity: 0.9; transform: scale(0.98); }
     <div id="outputContent"></div>
   </div>
 
-  <div class="footer">
-    © Kpr Calculator By Tajmul
-  </div>
+  <div class="footer">© Kpr Calculator By Tajmul</div>
 </div>
 
 <script>
@@ -325,6 +308,12 @@ function calculate(){
      html = `<div class="result-row"><span class="res-label">Material Qty</span><span class="res-value">${r.n} Units</span></div>
              <div class="result-row"><span class="res-label">Spacing (Gap)</span><span class="res-value res-highlight">${toInchNull(r.g)}</span></div>
              <div class="result-row"><span class="res-label">Fit Status</span><span class="status-badge ${r.exact ? 'status-success' : 'status-warn'}">${r.exact ? 'Perfect Fit' : 'Nearest Approx'}</span></div>`;
+             
+     // --- ADDED DIFFERENCE LOGIC BACK HERE ---
+     if(!r.exact) {
+         html += `<div class="result-row"><span class="res-label">Difference</span><span class="res-value" style="color:#FACC15">${toInchNull(r.diff)}</span></div>`;
+     }
+     
    } else { html = `<div style="text-align:center; color:var(--error);">No practical gap found.</div>`; }
   } else {
    let pc = parseInt(pipeCount.value);
@@ -345,4 +334,5 @@ toggleInputs();
 </script>
 </body>
 </html>
+
 
