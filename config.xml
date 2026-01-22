@@ -19,7 +19,7 @@
     <!-- FULLSCREEN -->
     <preference name="Fullscreen" value="true" />
     <preference name="StatusBarOverlaysWebView" value="true" />
-    <preference name="BackgroundColor" value="0xFF000000" />
+    <preference name="BackgroundColor" value="#0F0F0F" />
 
     <!-- ICON -->
     <icon src="icon.png" />
